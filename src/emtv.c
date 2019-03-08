@@ -6,6 +6,9 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 
+extern void glRasterPos2f(float, float);
+extern void glColor3f(float, float, float);
+
 static GLuint program;
 static GLint attribute_coord2d;
 static GLint u_offset_x;
@@ -13,6 +16,7 @@ static GLint u_scale_x;
 static GLuint vbo;
 
 static int t;
+static int prevf;
 static int f;
 
 static float offset_x = 0.0;
@@ -124,7 +128,7 @@ static void init() {
 
         "    f_color = XYZ2RGB * vec4(vtx.w*0.265/0.285, vtx.w, vtx.w*(1.0-0.265-0.285)/0.285, 1.0); \n"
 
-        "    gl_PointSize = 5.0; \n"
+        "    gl_PointSize = 3.0; \n"
         "} \n";
 
     glShaderSource(vs, 1, &vs_source, NULL);
@@ -189,13 +193,15 @@ static void init() {
     idle();
 }
 
+
 static void display() {
     glEnable(GL_MULTISAMPLE);
 
     glClearColor(0.0, 0.0, 0.0, 0.0);
     glClear(GL_COLOR_BUFFER_BIT);
 
-
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
     glUseProgram(program);
 
@@ -225,16 +231,23 @@ static void display() {
     glUseProgram(0);
 
 
-
-    glutSwapBuffers();
-
     int now = glutGet(GLUT_ELAPSED_TIME);
     ++f;
     if (now-t >= 1000) {
-        printf("%f ms/frame\n", 1000.0/f);
+        prevf = f;
         f = 0;
         t = now;
     }
+
+    glRasterPos2f(-0.95, -0.95);
+    glColor3f(0.7f, 0.7f, 0.7f);
+    unsigned char s[500];
+    sprintf((char*)s, "%6.2f ms/fr", 1000.0/prevf);
+    glutBitmapString(GLUT_BITMAP_8_BY_13, s);
+
+
+    glutSwapBuffers();
+
 }
 
 static void keyboard(unsigned char key, int x, int y) {
