@@ -5,9 +5,12 @@
 #include <GL/freeglut.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
+#include "rngs.h"
 
 extern void glRasterPos2f(float, float);
 extern void glColor3f(float, float, float);
+
+
 
 static GLuint program;
 static GLint attribute_coord2d;
@@ -72,11 +75,12 @@ struct vtx {
 };
 
 static double video_static() {
-    double scale = (double)(0.8-0.2) / RAND_MAX;
-    return 0.2 + rand()*scale;
+    const double scale = 0.85-0.1;
+    return 0.1 + Random()*scale;
 }
 
-#define C_FIELD 8000
+#define C_H 910
+#define C_FIELD (C_H*80)
 
 static void idle() {
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
@@ -84,9 +88,9 @@ static void idle() {
     struct vtx graph[C_FIELD];
     for (int i = 0; i < C_FIELD; ++i) {
         graph[i].x = deflector_step(&H)*2-1;
-        graph[i].y = -deflector_step(&V)*2+1;
+        graph[i].y = -(deflector_step(&V)*2-1);
         graph[i].z = 0.0;
-        graph[i].w = (H.flyback||V.flyback) ? 0.15 : video_static();
+        graph[i].w = V.flyback ? 3.0 : H.flyback ? 2.0 : video_static();
     }
 
     glBufferData(GL_ARRAY_BUFFER, sizeof(graph), graph, GL_STATIC_DRAW);
@@ -96,12 +100,13 @@ static void idle() {
 }
 
 static void init() {
-    H.period =  200;
-    H.uptime =  120;
-    H.curr_t =    0;
+    H.period = C_H;
+    H.uptime = 754;
     V.period = C_FIELD;
-    V.uptime = 5747;
-    V.curr_t =    0;
+    V.uptime = C_FIELD-3*H.period;
+
+    H.curr_t = 0;
+    V.curr_t = 0;
 
     glEnable(GL_MULTISAMPLE);
 
@@ -126,7 +131,15 @@ static void init() {
         "void main(void) { \n"
         "    gl_Position = vec4((vtx.x + offset_x) * scale_x, (vtx.y + offset_x) * scale_x, vtx.z, 1.0); \n"
 
-        "    f_color = XYZ2RGB * vec4(vtx.w*0.265/0.285, vtx.w, vtx.w*(1.0-0.265-0.285)/0.285, 1.0); \n"
+        "    if (vtx.w >= 2.9) { \n"
+        "        f_color = vec4(0.4,0.0,0.4,0.7); \n"
+        // "        f_color = vec4(0.0,0.0,0.0,0.0); \n"
+        "    } else if (vtx.w >= 1.9) { \n"
+        "        f_color = vec4(0.6,0.6,0.2,0.4); \n"
+        // "        f_color = vec4(0.0,0.0,0.0,0.0); \n"
+        "    } else { \n"
+        "        f_color = XYZ2RGB * vec4(vtx.w*0.265/0.285, vtx.w, vtx.w*(1.0-0.265-0.285)/0.285, 0.8); \n"
+        "    } \n"
 
         "    gl_PointSize = 3.0; \n"
         "} \n";
@@ -187,7 +200,7 @@ static void init() {
     glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
 
     glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBlendFunc(GL_SRC_ALPHA, GL_DST_ALPHA);
 
     glGenBuffers(1, &vbo);
     idle();
@@ -199,9 +212,6 @@ static void display() {
 
     glClearColor(0.0, 0.0, 0.0, 0.0);
     glClear(GL_COLOR_BUFFER_BIT);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
     glUseProgram(program);
 
@@ -220,9 +230,6 @@ static void display() {
         0,                 // no extra data between each position
         0); // pointer to the C array (NULL = use vbo)
 
-    glEnable(GL_BLEND);
-    glBlendEquation(GL_MAX);
-    // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     glDrawArrays(GL_POINTS, 0, C_FIELD);
 
@@ -262,7 +269,8 @@ static void keyboard(unsigned char key, int x, int y) {
 }
 
 int main(int argc, char **argv) {
-    srand(time(0));
+    PlantSeeds(-1);
+
     glutInit(&argc, argv);
     t = glutGet(GLUT_ELAPSED_TIME);
     f = 0;
