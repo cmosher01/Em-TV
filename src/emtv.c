@@ -218,7 +218,7 @@ static void init() {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_LINE_SMOOTH);
-    glLineWidth(3.14);
+    glLineWidth(1.0);
     glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
 
     glGenBuffers(1, &vbo);
@@ -269,7 +269,7 @@ static void display() {
     glRasterPos2f(-0.95, -0.95);
     glColor3f(0.7f, 0.7f, 0.7f);
     unsigned char s[500];
-    sprintf((char*)s, "%6.2f ms/fr", 1000.0/prevf);
+    sprintf((char*)s, "%6.2f ms/fr  br %+5.2f  cn %4.2f", 1000.0/prevf, brightness, contrast);
     glutBitmapString(GLUT_BITMAP_8_BY_13, s);
 
 
@@ -319,7 +319,7 @@ int main(int argc, char **argv) {
     glutInitContextProfile(GLUT_CORE_PROFILE);
 
     glutInitDisplayMode(GLUT_RGBA | GLUT_ALPHA | GLUT_DEPTH | GLUT_DOUBLE | GLUT_MULTISAMPLE);
-    glutSetOption(GLUT_MULTISAMPLE, 4);
+    glutSetOption(GLUT_MULTISAMPLE, 16);
     glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_CONTINUE_EXECUTION);
     glutInitWindowSize(640, 480);
     int id_win = glutCreateWindow(argv[0]);
