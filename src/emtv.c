@@ -76,17 +76,17 @@ struct vtx {
 };
 
 static double video_static() {
-    const double scale = 0.85-0.1;
-    return 0.1 + Random()*scale;
+    const double scale = 0.95-0.05;
+    return 0.05 + Random()*scale;
 }
 
 #define C_H 910
-#define C_FIELD (C_H*80)
+#define C_FIELD (C_H*67.5)
 
 static void idle() {
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
-    struct vtx graph[C_FIELD];
+    struct vtx graph[(int)(C_FIELD+1)];
     for (int i = 0; i < C_FIELD; ++i) {
         graph[i].x = deflector_step(&H)*2-1;
         graph[i].y = -(deflector_step(&V)*2-1);
@@ -157,7 +157,6 @@ static void init() {
         "        f_color = XYZ2RGB * vec4(Y*0.265/0.285, Y, Y*(1.0-0.265-0.285)/0.285, .8); \n"
         "    } \n"
 
-        // "    gl_PointSize = 3.1415927; \n"
         "} \n";
 
     glShaderSource(vs, 1, &vs_source, NULL);
@@ -175,7 +174,7 @@ static void init() {
     GLuint fs = glCreateShader(GL_FRAGMENT_SHADER);
     const char *fs_source =
 
-        "#version 120 \n"  // OpenGL 2.1
+        "#version 120 \n"
 
         "varying vec4 f_color; \n"
 
@@ -227,10 +226,10 @@ static void init() {
 
 
 static void display() {
-    glEnable(GL_MULTISAMPLE);
-
-    glClearColor(0.0, 0.0, 0.0, 1.0);
+    glClearColor(0.01012, 0.02052, 0.03986, 1.0);
     glClear(GL_COLOR_BUFFER_BIT);
+
+
 
     glUseProgram(program);
 
@@ -239,22 +238,12 @@ static void display() {
     glUniform1f(u_contrast, contrast);
 
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
-
     glEnableVertexAttribArray(attribute_coord2d);
-
-    glVertexAttribPointer(
-        attribute_coord2d, // attribute
-        sizeof(struct vtx)/sizeof(GLfloat),                 // number of elements per vertex
-        GL_FLOAT,          // the type of each element
-        GL_FALSE,          // take our values as-is
-        0,                 // no extra data between each position
-        0); // pointer to the C array (NULL = use vbo)
-
-
+    glVertexAttribPointer(attribute_coord2d, sizeof(struct vtx)/sizeof(GLfloat), GL_FLOAT, GL_FALSE, 0, 0);
     glDrawArrays(GL_LINE_STRIP, 0, C_FIELD);
-
     glDisableVertexAttribArray(attribute_coord2d);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
+
     glUseProgram(0);
 
 
