@@ -14,17 +14,18 @@ extern void glColor3f(float, float, float);
 
 static GLuint program;
 static GLint attribute_coord2d;
-static GLint u_offset_x;
-static GLint u_scale_x;
+static GLint u_hilite_flyback;
+static GLint u_brightness;
+static GLint u_contrast;
 static GLuint vbo;
 
 static int t;
 static int prevf;
 static int f;
 
-static float offset_x = 0.0;
-static float scale_x = 0.8;
-
+static int hilite_flyback = 0;
+static float brightness = 0.0;
+static float contrast = 1.0;
 
 
 /*
@@ -89,8 +90,11 @@ static void idle() {
     for (int i = 0; i < C_FIELD; ++i) {
         graph[i].x = deflector_step(&H)*2-1;
         graph[i].y = -(deflector_step(&V)*2-1);
-        graph[i].z = 0.0;
-        graph[i].w = V.flyback ? 3.0 : H.flyback ? 2.0 : video_static();
+        graph[i].z = -0.87;
+        graph[i].w = video_static();
+        if (V.flyback || H.flyback) {
+            graph[i].w *= -1.0;
+        }
     }
 
     glBufferData(GL_ARRAY_BUFFER, sizeof(graph), graph, GL_STATIC_DRAW);
@@ -117,8 +121,9 @@ static void init() {
 
         "#version 120 \n"
 
-        "uniform float offset_x; \n"
-        "uniform float scale_x; \n"
+        "uniform int hilite_flyback; \n"
+        "uniform float brightness; \n"
+        "uniform float contrast; \n"
         "attribute vec4 vtx; \n"
         "varying vec4 f_color; \n"
 
@@ -128,20 +133,31 @@ static void init() {
             "+0.0736477, -0.1453020, +1.3018376, +0.0000000,"
             "+0.0000000, +0.0000000, +0.0000000, +1.0000000); \n"
 
-        "void main(void) { \n"
-        "    gl_Position = vec4((vtx.x + offset_x) * scale_x, (vtx.y + offset_x) * scale_x, vtx.z, 1.0); \n"
+        "vec4 barrel(vec3 v) { \n"
+        "    vec4 p = vec4(v.x, v.y, v.z, 1.0); \n"
+        "    float rxy = length(p.xy) * 0.5; \n"
+        "    if (rxy > 0) { \n"
+        "        float phi = atan(rxy, -p.z); \n"
+        "        float r = phi / (3.1415927/2.0); \n"
+        "        p.xy *= r/rxy; \n"
+        "    } \n"
+        "    return p; \n"
+        "} \n"
 
-        "    if (vtx.w >= 2.9) { \n"
-        "        f_color = vec4(0.4,0.0,0.4,0.7); \n"
-        // "        f_color = vec4(0.0,0.0,0.0,0.0); \n"
-        "    } else if (vtx.w >= 1.9) { \n"
-        "        f_color = vec4(0.6,0.6,0.2,0.4); \n"
-        // "        f_color = vec4(0.0,0.0,0.0,0.0); \n"
+        "void main(void) { \n"
+        "    vec3 p1 = vtx.xyz; \n"
+        "    vec4 p = barrel(p1); \n"
+        "    p.xy *= 1.317; \n"
+        "    gl_Position = p; \n"
+
+        "    if (vtx.w < -0.001 && hilite_flyback != 0) { \n"
+        "        f_color = vec4(0.6,0.6,0.2,(0.5 + brightness) * contrast); \n"
         "    } else { \n"
-        "        f_color = XYZ2RGB * vec4(vtx.w*0.265/0.285, vtx.w, vtx.w*(1.0-0.265-0.285)/0.285, 0.8); \n"
+        "        float Y = (abs(vtx.w) + brightness) * contrast; \n"
+        "        f_color = XYZ2RGB * vec4(Y*0.265/0.285, Y, Y*(1.0-0.265-0.285)/0.285, .8); \n"
         "    } \n"
 
-        "    gl_PointSize = 3.0; \n"
+        // "    gl_PointSize = 3.1415927; \n"
         "} \n";
 
     glShaderSource(vs, 1, &vs_source, NULL);
@@ -194,13 +210,16 @@ static void init() {
         fprintf(stderr, "Could not bind attribute vtx\n");
     }
 
-    u_offset_x = glGetUniformLocation(program, "offset_x");
-    u_scale_x = glGetUniformLocation(program, "scale_x");
+    u_hilite_flyback = glGetUniformLocation(program, "hilite_flyback");
+    u_brightness = glGetUniformLocation(program, "brightness");
+    u_contrast = glGetUniformLocation(program, "contrast");
 
-    glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
-
+    glDisable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_DST_ALPHA);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_LINE_SMOOTH);
+    glLineWidth(3.14);
+    glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
 
     glGenBuffers(1, &vbo);
     idle();
@@ -210,13 +229,14 @@ static void init() {
 static void display() {
     glEnable(GL_MULTISAMPLE);
 
-    glClearColor(0.0, 0.0, 0.0, 0.0);
+    glClearColor(0.0, 0.0, 0.0, 1.0);
     glClear(GL_COLOR_BUFFER_BIT);
 
     glUseProgram(program);
 
-    glUniform1f(u_offset_x, offset_x);
-    glUniform1f(u_scale_x, scale_x);
+    glUniform1i(u_hilite_flyback, hilite_flyback);
+    glUniform1f(u_brightness, brightness);
+    glUniform1f(u_contrast, contrast);
 
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
@@ -231,7 +251,7 @@ static void display() {
         0); // pointer to the C array (NULL = use vbo)
 
 
-    glDrawArrays(GL_POINTS, 0, C_FIELD);
+    glDrawArrays(GL_LINE_STRIP, 0, C_FIELD);
 
     glDisableVertexAttribArray(attribute_coord2d);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -263,6 +283,25 @@ static void keyboard(unsigned char key, int x, int y) {
         case 27: // escape
             glutLeaveMainLoop();
         break;
+        case 'f':
+            hilite_flyback = !hilite_flyback;
+        break;
+        case 'b':
+            if (brightness <= 0.95)
+                brightness += 0.05;
+        break;
+        case 'd':
+            if (brightness >= -0.95)
+                brightness -= 0.05;
+        break;
+        case 'c':
+            if (contrast <= 3.95)
+                contrast += 0.05;
+        break;
+        case 'a':
+            if (contrast >= 0.05)
+                contrast -= 0.05;
+        break;
         default:
         break;
     }
@@ -279,7 +318,8 @@ int main(int argc, char **argv) {
     glutInitContextVersion(2, 1);
     glutInitContextProfile(GLUT_CORE_PROFILE);
 
-    glutInitDisplayMode(GLUT_DOUBLE | GLUT_ALPHA | GLUT_DEPTH | GLUT_STENCIL | GLUT_MULTISAMPLE);
+    glutInitDisplayMode(GLUT_RGBA | GLUT_ALPHA | GLUT_DEPTH | GLUT_DOUBLE | GLUT_MULTISAMPLE);
+    glutSetOption(GLUT_MULTISAMPLE, 4);
     glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_CONTINUE_EXECUTION);
     glutInitWindowSize(640, 480);
     int id_win = glutCreateWindow(argv[0]);
@@ -288,13 +328,9 @@ int main(int argc, char **argv) {
         return 1;
     }
 
-    // glutReshapeFunc(reshape);
     glutDisplayFunc(display);
     glutKeyboardFunc(keyboard);
     glutIdleFunc(idle);
-    // glutSpecialFunc(special);
-    // glutMouseFunc(mouse);
-    // glutMotionFunc(motion);
 
     gl3wInit();
     printf("%s, OpenGL %s, GLSL %s\n", glGetString(GL_RENDERER), glGetString(GL_VERSION), glGetString(GL_SHADING_LANGUAGE_VERSION));
