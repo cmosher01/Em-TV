@@ -48,12 +48,7 @@ double deflector_step(struct deflector *d) {
     const int t = d->curr_t;
 
     d->flyback = (u < t);
-    double y;
-    if (!d->flyback) {
-        y = t/u;
-    } else {
-        y = (p-t)/(p-u);
-    }
+    const double y = !d->flyback ? t/u : (p-t)/(p-u);
 
     ++d->curr_t;
     d->curr_t %= d->period;
@@ -76,11 +71,11 @@ struct vtx {
 };
 
 static double video_static() {
-    const double scale = 0.95-0.05;
-    return 0.05 + Random()*scale;
+    return 0.05+Random()*0.90;
 }
 
 #define C_H 910
+#define C_H_VIS 754
 #define C_FIELD (C_H*67.5)
 
 static void idle() {
@@ -105,7 +100,7 @@ static void idle() {
 
 static void init() {
     H.period = C_H;
-    H.uptime = 754;
+    H.uptime = C_H_VIS;
     V.period = C_FIELD;
     V.uptime = C_FIELD-3*H.period;
 
