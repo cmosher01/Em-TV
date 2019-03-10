@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <math.h>
-#include <time.h>
 #include <GL/gl3w.h>
 #include <GL/freeglut.h>
 #include <GL/gl.h>
@@ -43,12 +42,13 @@ struct deflector {
 };
 
 double deflector_step(struct deflector *d) {
-    const double u = (double)d->uptime;
-    const double p = (double)d->period;
+    const double u = d->uptime;
     const int t = d->curr_t;
 
     d->flyback = (u < t);
-    const double y = !d->flyback ? t/u : (p-t)/(p-u);
+
+    const double p = d->flyback ? d->period : 0.0;
+    const double y = (t-p)/(u-p);
 
     ++d->curr_t;
     d->curr_t %= d->period;
@@ -74,15 +74,11 @@ static double video_static() {
     return 0.05+Random()*0.90;
 }
 
-#define C_H 910
-#define C_H_VIS 754
-#define C_FIELD (C_H*67.5)
-
 static void idle() {
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
-    struct vtx graph[(int)(C_FIELD+1)];
-    for (int i = 0; i < C_FIELD; ++i) {
+    struct vtx graph[(int)(V.period+1)];
+    for (int i = 0; i < V.period; ++i) {
         graph[i].x = deflector_step(&H)*2-1;
         graph[i].y = -(deflector_step(&V)*2-1);
         graph[i].z = -0.87;
@@ -98,14 +94,31 @@ static void idle() {
     glutPostRedisplay();
 }
 
-static void init() {
+static int C_H;
+static int C_H_VIS;
+static float C_V;
+static int C_V_BNK;
+static int V_OFF;
+
+static void init_deflectors() {
+    const float C_FIELD = C_H*C_V;
+
     H.period = C_H;
     H.uptime = C_H_VIS;
     V.period = C_FIELD;
-    V.uptime = C_FIELD-3*H.period;
+    V.uptime = C_FIELD-C_V_BNK*H.period;
 
     H.curr_t = 0;
-    V.curr_t = 0;
+    V.curr_t = V_OFF;
+}
+
+static void init() {
+    C_H = 910;
+    C_H_VIS = 754;
+    C_V = 37.5;
+    C_V_BNK = 3;
+    V_OFF = (C_H-C_H_VIS)/2;
+    init_deflectors();
 
     glEnable(GL_MULTISAMPLE);
 
@@ -163,7 +176,7 @@ static void init() {
         char *errorLog = (char*)malloc(maxLength);
         glGetShaderInfoLog(vs, maxLength, &maxLength, errorLog);
         fprintf(stderr, "%s\n", errorLog);
-        glDeleteShader(vs); // Don't leak the shader.
+        glDeleteShader(vs);
     }
 
     GLuint fs = glCreateShader(GL_FRAGMENT_SHADER);
@@ -186,7 +199,7 @@ static void init() {
         char *errorLog = (char*)malloc(maxLength);
         glGetShaderInfoLog(fs, maxLength, &maxLength, errorLog);
         fprintf(stderr, "%s\n", errorLog);
-        glDeleteShader(fs); // Don't leak the shader.
+        glDeleteShader(fs);
     }
 
     program = glCreateProgram();
@@ -209,8 +222,7 @@ static void init() {
     u_contrast = glGetUniformLocation(program, "contrast");
 
     glDisable(GL_DEPTH_TEST);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
     glEnable(GL_LINE_SMOOTH);
     glLineWidth(1.0);
     glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
@@ -235,7 +247,7 @@ static void display() {
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glEnableVertexAttribArray(attribute_coord2d);
     glVertexAttribPointer(attribute_coord2d, sizeof(struct vtx)/sizeof(GLfloat), GL_FLOAT, GL_FALSE, 0, 0);
-    glDrawArrays(GL_LINE_STRIP, 0, C_FIELD);
+    glDrawArrays(GL_LINE_STRIP, 0, V.period);
     glDisableVertexAttribArray(attribute_coord2d);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
@@ -253,7 +265,9 @@ static void display() {
     glRasterPos2f(-0.95, -0.95);
     glColor3f(0.7f, 0.7f, 0.7f);
     unsigned char s[500];
-    sprintf((char*)s, "%6.2f ms/fr  br %+5.2f  cn %4.2f", 1000.0/prevf, brightness, contrast);
+    sprintf((char*)s,
+        "%6.2f ms/fr  br %+5.2f  cn %4.2f  H %d  V %5.1f (%+d)",
+        1000.0/prevf, brightness, contrast, C_H, C_V, V_OFF);
     glutBitmapString(GLUT_BITMAP_8_BY_13, s);
 
 
@@ -285,6 +299,26 @@ static void keyboard(unsigned char key, int x, int y) {
         case 'a':
             if (contrast >= 0.05)
                 contrast -= 0.05;
+        break;
+        case '[':
+            if (C_V > C_V_BNK) {
+                C_V -= 0.5;
+                init_deflectors();
+            }
+        break;
+        case ']':
+            if (C_V < 700) {
+                C_V += 0.5;
+                init_deflectors();
+            }
+        break;
+        case ',':
+            V_OFF = fmax(V_OFF-10,0);
+            init_deflectors();
+        break;
+        case '.':
+            V_OFF = fmin(V_OFF+10,C_H);
+            init_deflectors();
         break;
         default:
         break;
