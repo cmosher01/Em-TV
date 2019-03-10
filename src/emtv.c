@@ -25,6 +25,7 @@ static int f;
 static int hilite_flyback = 0;
 static float brightness = 0.0;
 static float contrast = 1.0;
+static float jitter_y = 0.002;
 
 
 /*
@@ -41,19 +42,16 @@ struct deflector {
     int flyback;
 };
 
-double deflector_step(struct deflector *d) {
-    const double u = d->uptime;
-    const int t = d->curr_t;
+float deflector_step(struct deflector *d) {
+    const int t = d->curr_t++;
+    d->curr_t %= d->period;
+
+    const float u = d->uptime;
 
     d->flyback = (u < t);
 
-    const double p = d->flyback ? d->period : 0.0;
-    const double y = (t-p)/(u-p);
-
-    ++d->curr_t;
-    d->curr_t %= d->period;
-
-    return y;
+    const float p = d->flyback ? d->period : 0.0f;
+    return (t-p)/(u-p);
 }
 
 
@@ -70,8 +68,12 @@ struct vtx {
     GLfloat w;
 };
 
-static double video_static() {
+static float video_static() {
     return 0.05+Random()*0.90;
+}
+
+static float y_jitter() {
+    return (Random()*2.0-1.0)*jitter_y;
 }
 
 static void idle() {
@@ -80,7 +82,7 @@ static void idle() {
     struct vtx graph[(int)(V.period+1)];
     for (int i = 0; i < V.period; ++i) {
         graph[i].x = deflector_step(&H)*2-1;
-        graph[i].y = -(deflector_step(&V)*2-1);
+        graph[i].y = y_jitter()-(deflector_step(&V)*2-1);
         graph[i].z = -0.87;
         graph[i].w = video_static();
         if (V.flyback || H.flyback) {
@@ -115,7 +117,7 @@ static void init_deflectors() {
 static void init() {
     C_H = 910;
     C_H_VIS = 754;
-    C_V = 37.5;
+    C_V = 262.5;
     C_V_BNK = 3;
     V_OFF = (C_H-C_H_VIS)/2;
     init_deflectors();
@@ -224,7 +226,7 @@ static void init() {
     glDisable(GL_DEPTH_TEST);
 
     glEnable(GL_LINE_SMOOTH);
-    glLineWidth(1.0);
+    glLineWidth(1);
     glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
 
     glGenBuffers(1, &vbo);
@@ -266,8 +268,8 @@ static void display() {
     glColor3f(0.7f, 0.7f, 0.7f);
     unsigned char s[500];
     sprintf((char*)s,
-        "%6.2f ms/fr  br %+5.2f  cn %4.2f  H %d  V %5.1f (%+d)",
-        1000.0/prevf, brightness, contrast, C_H, C_V, V_OFF);
+        "%6.2f ms/fr  br %+5.2f  cn %4.2f  H %d  V %5.1f (%+d)  j %5.3f",
+        1000.0/prevf, brightness, contrast, C_H, C_V, V_OFF, jitter_y);
     glutBitmapString(GLUT_BITMAP_8_BY_13, s);
 
 
@@ -319,6 +321,12 @@ static void keyboard(unsigned char key, int x, int y) {
         case '.':
             V_OFF = fmin(V_OFF+10,C_H);
             init_deflectors();
+        break;
+        case 'j':
+            jitter_y += 0.001;
+            if (jitter_y > 0.0051) {
+                jitter_y = 0.0;
+            }
         break;
         default:
         break;
