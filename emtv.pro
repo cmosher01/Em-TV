@@ -8,7 +8,7 @@ QT += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = qtapp
+TARGET = emtv
 TEMPLATE = app
 QMAKE_CXXFLAGS += -Wall
 
@@ -42,7 +42,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 RESOURCES += \
-    qtapp.qrc
+    emtv.qrc
 
 FORMS += \
     maincontrolwindow.ui

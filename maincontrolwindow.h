@@ -2,6 +2,7 @@
 #define MAINCONTROLWINDOW_H
 
 #include <QMainWindow>
+#include <memory>
 
 class TvWindow;
 

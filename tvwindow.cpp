@@ -26,11 +26,11 @@ TvWindow::~TvWindow() {
 
 static QSurfaceFormat getSurfaceFormat() {
     QSurfaceFormat format;
-    format.setRenderableType(QSurfaceFormat::OpenGL);
-    format.setProfile(QSurfaceFormat::CoreProfile);
+    format.setRenderableType(QSurfaceFormat::RenderableType::OpenGL);
+    format.setProfile(QSurfaceFormat::OpenGLContextProfile::CoreProfile);
     format.setVersion(3,3);
-    format.setSwapBehavior(QSurfaceFormat::SwapBehavior::DoubleBuffer);
-    format.setSwapInterval(1);
+    format.setSwapBehavior(QSurfaceFormat::SwapBehavior::SingleBuffer);
+    format.setSwapInterval(0);
     return format;
 }
 
@@ -80,11 +80,11 @@ void TvWindow::resizeGL(int width, int height) {
 }
 
 static float video_static() {
-    return (float)(0.05+QRandomGenerator::global()->generateDouble()*0.90);
+    return (0.05f+static_cast<float>(QRandomGenerator::global()->generateDouble())*0.90f);
 }
 
 static float y_jitter() {
-    return (float)(QRandomGenerator::global()->generateDouble()*2.0-1.0)*0.002f;
+    return (static_cast<float>(QRandomGenerator::global()->generateDouble())*2.0f-1.0f)*0.002f;
 }
 
 struct vtx {
@@ -96,7 +96,7 @@ struct vtx {
 
 void TvWindow::fill() {
     this->vbo.bind();
-    vtx* pvtx = (vtx*)this->vbo.map(QOpenGLBuffer::Access::WriteOnly);
+    vtx* pvtx = static_cast<vtx*>(this->vbo.map(QOpenGLBuffer::Access::WriteOnly));
     if (pvtx != nullptr) {
         std::vector<vtx> graph;
         for (int i = 0; i < this->V->get_period(); ++i) {
@@ -117,6 +117,7 @@ void TvWindow::fill() {
 }
 
 void TvWindow::timerEvent(QTimerEvent *event) {
+    static_cast<void>(event);
     makeCurrent();
     fill();
     doneCurrent();
@@ -208,7 +209,7 @@ void TvWindow::createGeometry() {
     this->vbo.create();
     this->vbo.bind();
     this->vbo.setUsagePattern(QOpenGLBuffer::UsagePattern::DynamicDraw);
-    this->vbo.allocate(this->V->get_period() * (int)sizeof(vtx));
+    this->vbo.allocate(this->V->get_period() * static_cast<int>(sizeof(vtx)));
 
     this->vao.create();
     this->vao.bind();
