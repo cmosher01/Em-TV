@@ -26,6 +26,10 @@ private slots:
     void on_actionQuit_triggered();
     void on_cbTv_stateChanged(int state);
 
+    void on_brightness_valueChanged(int value);
+
+    void on_contrast_valueChanged(int value);
+
 private:
     Ui::MainControlWindow *ui;
     std::unique_ptr<TvWindow> tv;

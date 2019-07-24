@@ -17,11 +17,9 @@
 TvWindow::TvWindow():
     QOpenGLWindow (QOpenGLWindow::UpdateBehavior::NoPartialUpdate),
     vbo(QOpenGLBuffer::Type::VertexBuffer) {
-    qDebug() << "TvWindow";
 }
 
 TvWindow::~TvWindow() {
-    qDebug() << "~TvWindow";
 }
 
 static QSurfaceFormat getSurfaceFormat() {
@@ -130,8 +128,8 @@ void TvWindow::paintGL() {
 
     this->shader.bind();
     this->shader.setUniformValue("hilite_flyback", 0);
-    this->shader.setUniformValue("brightness", 0.5f);
-    this->shader.setUniformValue("contrast", 0.5f);
+    this->shader.setUniformValue("brightness", this->brightness);
+    this->shader.setUniformValue("contrast", this->contrast);
     this->vao.bind();
     gl.glDrawArrays(GL_LINE_STRIP, 0, this->V->get_period());
     this->vao.release();
@@ -140,7 +138,6 @@ void TvWindow::paintGL() {
 
 bool TvWindow::event(QEvent *event) {
     if (event->type() == QEvent::Close) {
-        qDebug() << event;
         emit closing();
         return true;
     }
@@ -229,4 +226,18 @@ void TvWindow::createGeometry() {
     this->vao.release();
     this->vbo.release();
     this->shader.release();
+}
+
+void TvWindow::set_brightness(float brightness) {
+    this->brightness = brightness;
+    makeCurrent();
+    update();
+    doneCurrent();
+}
+
+void TvWindow::set_contrast(float contrast) {
+    this->contrast = contrast;
+    makeCurrent();
+    update();
+    doneCurrent();
 }

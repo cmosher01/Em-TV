@@ -36,6 +36,9 @@ public:
 
     void timerEvent(QTimerEvent *event) override;
 
+    void set_brightness(float brightness);
+    void set_contrast(float contrast);
+
 signals:
     void closing();
 
@@ -70,6 +73,9 @@ private:
 
     std::unique_ptr<TvDeflector> H;
     std::unique_ptr<TvDeflector> V;
+
+    float brightness;
+    float contrast;
 };
 
 #endif // TVWINDOW_H

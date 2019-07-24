@@ -8,31 +8,29 @@ MainControlWindow::MainControlWindow(QWidget *parent) :
     ui(new Ui::MainControlWindow),
     tv(nullptr)
 {
-    qDebug() << "MainControlWindow::MainControlWindow";
     ui->setupUi(this);
 }
 
 MainControlWindow::~MainControlWindow()
 {
-    qDebug() << "MainControlWindow::~MainControlWindow";
     delete ui;
 }
 
 void MainControlWindow::on_actionQuit_triggered()
 {
-    qDebug() << "MainControlWindow::quit";
     QCoreApplication::instance()->quit();
 }
 
 void MainControlWindow::on_cbTv_stateChanged(int state)
 {
-    qDebug() << "MainControlWindow::on_cbTv_stateChanged";
     const auto should_be_on = state != Qt::Unchecked;
     const auto is_on = (this->tv != nullptr);
     if (is_on != should_be_on) {
         if (should_be_on) {
             this->tv = TvWindow::create<TvWindow>();
             connect(this->tv.get(), &TvWindow::closing, this, &MainControlWindow::tv_closing);
+            on_brightness_valueChanged(this->ui->brightness->value());
+            on_contrast_valueChanged(this->ui->contrast->value());
         } else {
             disconnect(this->tv.get(), &TvWindow::closing, this, &MainControlWindow::tv_closing);
             this->tv = nullptr;
@@ -41,6 +39,15 @@ void MainControlWindow::on_cbTv_stateChanged(int state)
 }
 
 void MainControlWindow::tv_closing() {
-    qDebug() << "MainControlWindow::tv_closing";
     this->ui->cbTv->setCheckState(Qt::Unchecked);
+}
+
+void MainControlWindow::on_brightness_valueChanged(int value)
+{
+    this->tv->set_brightness(value/100.0f);
+}
+
+void MainControlWindow::on_contrast_valueChanged(int value)
+{
+    this->tv->set_contrast(value/100.0f);
 }
