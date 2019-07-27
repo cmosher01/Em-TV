@@ -21,9 +21,9 @@ void MainControlWindow::on_actionQuit_triggered()
     QCoreApplication::instance()->quit();
 }
 
-void MainControlWindow::on_cbTv_stateChanged(int state)
+void MainControlWindow::on_power_stateChanged(int state)
 {
-    const auto should_be_on = state != Qt::Unchecked;
+    const auto should_be_on = (state != Qt::Unchecked);
     const auto is_on = (this->tv != nullptr);
     if (is_on != should_be_on) {
         if (should_be_on) {
@@ -39,15 +39,19 @@ void MainControlWindow::on_cbTv_stateChanged(int state)
 }
 
 void MainControlWindow::tv_closing() {
-    this->ui->cbTv->setCheckState(Qt::Unchecked);
+    this->ui->power->setCheckState(Qt::Unchecked);
 }
 
 void MainControlWindow::on_brightness_valueChanged(int value)
 {
-    this->tv->set_brightness(value/100.0f);
+    if (this->tv) {
+        this->tv->set_brightness(value/100.0f);
+    }
 }
 
 void MainControlWindow::on_contrast_valueChanged(int value)
 {
-    this->tv->set_contrast(value/100.0f);
+    if (this->tv) {
+        this->tv->set_contrast(value/100.0f);
+    }
 }

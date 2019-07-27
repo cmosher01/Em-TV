@@ -34,9 +34,9 @@ static QSurfaceFormat getSurfaceFormat() {
 
 void TvWindow::initialize() {
     setFormat(getSurfaceFormat());
-    resize(TvWindow::getSavedWindowSize());
-    setPosition(TvWindow::getSavedWindowPosition());
-    connect(this, SIGNAL(frameSwapped()), this, SLOT(update()));
+    resize(getSavedWindowSize());
+    setPosition(getSavedWindowPosition());
+    connect(this, &TvWindow::frameSwapped, this, qOverload<>(&TvWindow::update));
 }
 
 static constexpr auto SET_WIN_SIZE = "tv/window/size";
@@ -145,11 +145,11 @@ bool TvWindow::event(QEvent *event) {
 }
 
 void TvWindow::moveEvent(QMoveEvent *event) {
-    TvWindow::saveWindowPosition(event->pos());
+    saveWindowPosition(event->pos());
 }
 
 void TvWindow::resizeEvent(QResizeEvent *event) {
-    TvWindow::saveWindowSize(event->size());
+    saveWindowSize(event->size());
 }
 
 void TvWindow::printContextInformation() {
@@ -189,15 +189,16 @@ void TvWindow::createGeometry() {
     QOpenGLFunctions gl(QOpenGLContext::currentContext());
 
     C_H = 910;
-    C_H_VIS = 754;
+    C_H_BNK = 156;
     C_V = 262.5;
 //    C_V = 32.5;
     C_V_BNK = 3;
-    V_OFF = (C_H-C_H_VIS)/2;
-    const float C_FIELD = C_H*C_V;
+    V_OFF = C_H_BNK/2;
+    const float C_FIELD = C_V*C_H;
+    const float C_FIELD_BNK = C_V_BNK*C_H;
 
-    this->H = std::make_unique<TvDeflector>(C_H, C_H_VIS);
-    this->V = std::make_unique<TvDeflector>(C_FIELD, C_FIELD-C_V_BNK*C_H, V_OFF);
+    this->H = std::make_unique<TvDeflector>(C_H, C_H-C_H_BNK);
+    this->V = std::make_unique<TvDeflector>(C_FIELD, C_FIELD-C_FIELD_BNK, V_OFF);
 
 
 

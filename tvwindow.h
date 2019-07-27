@@ -66,7 +66,7 @@ private:
     std::unique_ptr<QBasicTimer> timer;
 
     int C_H;
-    int C_H_VIS;
+    int C_H_BNK;
     float C_V;
     int C_V_BNK;
     int V_OFF;

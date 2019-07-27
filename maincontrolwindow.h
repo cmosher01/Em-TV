@@ -24,7 +24,7 @@ public slots:
 
 private slots:
     void on_actionQuit_triggered();
-    void on_cbTv_stateChanged(int state);
+    void on_power_stateChanged(int state);
 
     void on_brightness_valueChanged(int value);
 
