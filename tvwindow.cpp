@@ -81,9 +81,6 @@ static float video_static() {
     return (0.05f+static_cast<float>(QRandomGenerator::global()->generateDouble())*0.90f);
 }
 
-static float y_jitter() {
-    return (static_cast<float>(QRandomGenerator::global()->generateDouble())*2.0f-1.0f)*0.002f;
-}
 
 struct vtx {
     GLfloat x;
@@ -100,7 +97,8 @@ void TvWindow::fill() {
         for (int i = 0; i < this->V->get_period(); ++i) {
             vtx v;
             v.x = this->H->step()*2-1;
-            v.y = y_jitter()-(this->V->step()*2-1);
+            const float y_jitter = (static_cast<float>(QRandomGenerator::global()->generateDouble())*2.0f-1.0f)*this->jitter;
+            v.y = y_jitter-(this->V->step()*2-1);
             v.z = -0.87f;
             v.w = video_static();
             if (this->V->is_flyback() || this->H->is_flyback()) {
@@ -190,8 +188,6 @@ void TvWindow::createGeometry() {
 
     C_H = 910;
     C_H_BNK = 156;
-    C_V = 262.5;
-//    C_V = 32.5;
     C_V_BNK = 3;
     V_OFF = C_H_BNK/2;
     const float C_FIELD = C_V*C_H;
@@ -222,7 +218,7 @@ void TvWindow::createGeometry() {
     gl.glLineWidth(1);
     gl.glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
 
-    gl.glClearColor(0.01012f, 0.02052f, 0.03986f, 1.0f);
+    gl.glClearColor(0.2f, 0.22f, 0.27f, 1.0f);
 
     this->vao.release();
     this->vbo.release();
@@ -238,6 +234,25 @@ void TvWindow::set_brightness(float brightness) {
 
 void TvWindow::set_contrast(float contrast) {
     this->contrast = contrast;
+    makeCurrent();
+    update();
+    doneCurrent();
+}
+
+void TvWindow::set_lines(float lines) {
+    this->C_V = lines;
+    if (this->V) {
+        const float C_FIELD = C_V*C_H;
+        const float C_FIELD_BNK = C_V_BNK*C_H;
+        this->V->set(C_FIELD, C_FIELD-C_FIELD_BNK, V_OFF);
+        makeCurrent();
+        update();
+        doneCurrent();
+    }
+}
+
+void TvWindow::set_jitter(float jitter) {
+    this->jitter = jitter;
     makeCurrent();
     update();
     doneCurrent();

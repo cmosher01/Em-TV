@@ -14,6 +14,12 @@ int TvDeflector::get_period() {
     return this->period;
 }
 
+void TvDeflector::set(int period, int uptime, int offset) {
+    this->period = period;
+    this->uptime = uptime;
+    this->curr_t = offset;
+}
+
 float TvDeflector::step() {
     const float t = this->curr_t++;
     this->curr_t %= this->period;

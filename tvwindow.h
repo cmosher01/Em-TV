@@ -38,6 +38,8 @@ public:
 
     void set_brightness(float brightness);
     void set_contrast(float contrast);
+    void set_lines(float lines);
+    void set_jitter(float jitter);
 
 signals:
     void closing();
@@ -67,7 +69,6 @@ private:
 
     int C_H;
     int C_H_BNK;
-    float C_V;
     int C_V_BNK;
     int V_OFF;
 
@@ -76,6 +77,8 @@ private:
 
     float brightness;
     float contrast;
+    float C_V;
+    float jitter;
 };
 
 #endif // TVWINDOW_H

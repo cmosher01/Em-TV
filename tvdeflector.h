@@ -7,10 +7,10 @@ public:
     TvDeflector(int period, int uptime, int offset = 0);
 
     bool is_flyback();
+    int get_period();
 
     float step();
-
-    int get_period();
+    void set(int period, int uptime, int offset = 0);
 
 private:
     int period;

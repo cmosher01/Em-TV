@@ -30,6 +30,10 @@ private slots:
 
     void on_contrast_valueChanged(int value);
 
+    void on_lines_valueChanged(int value);
+
+    void on_jitter_valueChanged(int value);
+
 private:
     Ui::MainControlWindow *ui;
     std::unique_ptr<TvWindow> tv;

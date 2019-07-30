@@ -31,6 +31,8 @@ void MainControlWindow::on_power_stateChanged(int state)
             connect(this->tv.get(), &TvWindow::closing, this, &MainControlWindow::tv_closing);
             on_brightness_valueChanged(this->ui->brightness->value());
             on_contrast_valueChanged(this->ui->contrast->value());
+            on_lines_valueChanged(this->ui->lines->value());
+            on_jitter_valueChanged(this->ui->jitter->value());
         } else {
             disconnect(this->tv.get(), &TvWindow::closing, this, &MainControlWindow::tv_closing);
             this->tv = nullptr;
@@ -53,5 +55,19 @@ void MainControlWindow::on_contrast_valueChanged(int value)
 {
     if (this->tv) {
         this->tv->set_contrast(value/100.0f);
+    }
+}
+
+void MainControlWindow::on_lines_valueChanged(int value)
+{
+    if (this->tv) {
+        this->tv->set_lines((value/5*5)/10.0f);
+    }
+}
+
+void MainControlWindow::on_jitter_valueChanged(int value)
+{
+    if (this->tv) {
+        this->tv->set_jitter(value/1000.0f);
     }
 }
