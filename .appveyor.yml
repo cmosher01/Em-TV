@@ -1,0 +1,22 @@
+---
+install:
+  - set QTDIR=C:\Qt\5.12\mingw73_64
+  - set MINGWDIR=C:\mingw-w64\x86_64-7.2.0-posix-seh-rt_v5-rev1\mingw64
+  - set PATH=%PATH%;%QTDIR%\bin;%MINGWDIR%\bin
+before_build:
+  - qmake emtv.pro
+build_script:
+  - mingw32-make
+  - 7z a %APPVEYOR_PROJECT_NAME%-win.zip .\release\*.exe
+artifacts:
+  - name: zipfile
+    path: '*.zip'
+deploy:
+  description: Latest stable release
+  provider: GitHub
+  auth_token:
+    secure: TjyyWBvqvk2/j05cBmpMpWsBslEdpJV2JOWy/5Uwr7IP1zKVMx/x97deqVskxx6L
+  artifact: zipfile
+  on:
+    branch: master
+    APPVEYOR_REPO_TAG: true
