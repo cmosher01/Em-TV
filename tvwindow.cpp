@@ -9,10 +9,10 @@
 #include <QWidget>
 #include <QResizeEvent>
 #include <QMoveEvent>
-#include <QRandomGenerator>
+#include <QBasicTimer>
 #include <vector>
 #include <algorithm>
-#include <QBasicTimer>
+#include <cstdlib>
 
 TvWindow::TvWindow():
     QOpenGLWindow (QOpenGLWindow::UpdateBehavior::NoPartialUpdate),
@@ -78,7 +78,7 @@ void TvWindow::resizeGL(int width, int height) {
 }
 
 static float video_static() {
-    return (0.05f+static_cast<float>(QRandomGenerator::global()->generateDouble())*0.90f);
+    return (0.05f+static_cast<float>(rand()/(RAND_MAX+1.0))*0.90f);
 }
 
 
@@ -97,7 +97,7 @@ void TvWindow::fill() {
         for (int i = 0; i < this->V->get_period(); ++i) {
             vtx v;
             v.x = this->H->step()*2-1;
-            const float y_jitter = (static_cast<float>(QRandomGenerator::global()->generateDouble())*2.0f-1.0f)*this->jitter;
+            const float y_jitter = (static_cast<float>(rand()/(RAND_MAX+1.0))*2.0f-1.0f)*this->jitter;
             v.y = y_jitter-(this->V->step()*2-1);
             v.z = -0.87f;
             v.w = video_static();
