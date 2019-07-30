@@ -7,7 +7,7 @@ env:
 matrix:
   include:
     - os: linux
-      dist: xenial
+      dist: bionic
       sudo: required
       before_install:
         - sudo apt-get -qq update
