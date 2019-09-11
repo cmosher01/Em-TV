@@ -40,7 +40,8 @@ void MainControlWindow::on_power_stateChanged(int state)
     }
 }
 
-void MainControlWindow::tv_closing() {
+void MainControlWindow::tv_closing()
+{
     this->ui->power->setCheckState(Qt::Unchecked);
 }
 

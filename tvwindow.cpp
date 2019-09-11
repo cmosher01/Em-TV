@@ -39,24 +39,24 @@ void TvWindow::initialize() {
     connect(this, &TvWindow::frameSwapped, this, qOverload<>(&TvWindow::update));
 }
 
-static constexpr auto SET_WIN_SIZE = "tv/window/size";
+static constexpr auto TV_WIN_SIZE = "tv/window/size";
 
 QSize TvWindow::getSavedWindowSize() {
-    return QSettings().value(SET_WIN_SIZE, QSize(800, 600)).toSize();
+    return QSettings().value(TV_WIN_SIZE, QSize(800, 600)).toSize();
 }
 
 void TvWindow::saveWindowSize(const QSize& size) {
-    QSettings().setValue(SET_WIN_SIZE, size);
+    QSettings().setValue(TV_WIN_SIZE, size);
 }
 
-static constexpr auto SET_WIN_POS = "tv/window/position";
+static constexpr auto TV_WIN_POS = "tv/window/position";
 
 QPoint TvWindow::getSavedWindowPosition() {
-    return QSettings().value(SET_WIN_POS, QPoint(200, 200)).toPoint();
+    return QSettings().value(TV_WIN_POS, QPoint(200, 200)).toPoint();
 }
 
 void TvWindow::saveWindowPosition(const QPoint& pos) {
-    QSettings().setValue(SET_WIN_POS, pos);
+    QSettings().setValue(TV_WIN_POS, pos);
 }
 
 void TvWindow::initializeGL() {
