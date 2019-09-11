@@ -8,13 +8,11 @@ before_build:
 build_script:
   ps: |
     mingw32-make
-    ren release %APPVEYOR_PROJECT_NAME%
-    cd %APPVEYOR_PROJECT_NAME%
-    pwd
+    ren release emtv
+    cd emtv
     windeployqt.exe emtv.exe
-    dir
     cd ..
-    7z a %APPVEYOR_PROJECT_NAME%-win.zip %APPVEYOR_PROJECT_NAME%\
+    7z a emtv-win.zip emtv\
 artifacts:
   - name: zipfile
     path: '*.zip'
