@@ -8,7 +8,10 @@ before_build:
 build_script:
   - mingw32-make
   - ren release %APPVEYOR_PROJECT_NAME%
-  - dir -R %APPVEYOR_PROJECT_NAME%
+  - cd %APPVEYOR_PROJECT_NAME%
+  - windeployqt.exe *.exe
+  - dir -R
+  - cd ..
   - 7z a %APPVEYOR_PROJECT_NAME%-win.zip %APPVEYOR_PROJECT_NAME%\
 artifacts:
   - name: zipfile
