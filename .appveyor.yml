@@ -6,14 +6,15 @@ install:
 before_build:
   - qmake emtv.pro
 build_script:
-  - mingw32-make
-  - ren release %APPVEYOR_PROJECT_NAME%
-  - cd %APPVEYOR_PROJECT_NAME%
-  - pwd
-  - windeployqt.exe emtv.exe
-  - dir -R
-  - cd ..
-  - 7z a %APPVEYOR_PROJECT_NAME%-win.zip %APPVEYOR_PROJECT_NAME%\
+  ps: |
+    mingw32-make
+    ren release %APPVEYOR_PROJECT_NAME%
+    cd %APPVEYOR_PROJECT_NAME%
+    pwd
+    windeployqt.exe emtv.exe
+    dir
+    cd ..
+    7z a %APPVEYOR_PROJECT_NAME%-win.zip %APPVEYOR_PROJECT_NAME%\
 artifacts:
   - name: zipfile
     path: '*.zip'
