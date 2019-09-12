@@ -72,3 +72,10 @@ void MainControlWindow::on_jitter_valueChanged(int value)
         this->tv->set_jitter(value/1000.0f);
     }
 }
+
+void MainControlWindow::on_actionReset_triggered()
+{
+    if (this->tv) {
+        this->tv->factory_defaults();
+    }
+}

@@ -211,9 +211,19 @@
     <property name="title">
      <string>File</string>
     </property>
+    <addaction name="actionReset"/>
+    <addaction name="separator"/>
     <addaction name="actionQuit"/>
+    <addaction name="separator"/>
+   </widget>
+   <widget class="QMenu" name="menuComputer">
+    <property name="title">
+     <string>Computer</string>
+    </property>
+    <addaction name="actionTest"/>
    </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuComputer"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionQuit">
@@ -225,6 +235,22 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Q</string>
+   </property>
+  </action>
+  <action name="actionReset">
+   <property name="text">
+    <string>Reset</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
+   </property>
+  </action>
+  <action name="actionTest">
+   <property name="text">
+    <string>Test</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+T</string>
    </property>
   </action>
  </widget>

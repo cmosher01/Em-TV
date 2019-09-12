@@ -30,6 +30,8 @@ public:
     virtual ~TvWindow() override;
     explicit TvWindow(const TvWindow& that) = default;
 
+    void factory_defaults();
+
     void initializeGL() override;
     void resizeGL(int width, int height) override;
     void paintGL() override;
@@ -46,6 +48,7 @@ signals:
 
 protected:
     void initialize();
+    void reconfigure();
     bool event(QEvent *event) override;
     void moveEvent(QMoveEvent *event) override;
     void resizeEvent(QResizeEvent *event) override;

@@ -35,6 +35,8 @@ private slots:
 
     void on_jitter_valueChanged(int value);
 
+    void on_actionReset_triggered();
+
 private:
     Ui::MainControlWindow *ui;
     std::unique_ptr<TvWindow> tv;

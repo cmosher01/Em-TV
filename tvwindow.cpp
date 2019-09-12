@@ -33,10 +33,19 @@ static QSurfaceFormat getSurfaceFormat() {
 }
 
 void TvWindow::initialize() {
+    reconfigure();
     setFormat(getSurfaceFormat());
+    connect(this, &TvWindow::frameSwapped, this, qOverload<>(&TvWindow::update));
+}
+
+void TvWindow::factory_defaults() {
+    QSettings().clear();
+    reconfigure();
+}
+
+void TvWindow::reconfigure() {
     resize(getSavedWindowSize());
     setPosition(getSavedWindowPosition());
-    connect(this, &TvWindow::frameSwapped, this, qOverload<>(&TvWindow::update));
 }
 
 static constexpr auto TV_WIN_SIZE = "tv/window/size";
