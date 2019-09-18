@@ -19,7 +19,7 @@ build_script:
     dir C:\Qt\Tools
     dir C:\Qt\Tools\mingw730_64
     dir C:\Qt\Tools\QtInstallerFramework
-    dir C:\Qt\Tools\QtInstallerFramework\3.1
+    dir C:\Qt\Tools\QtInstallerFramework\3.1\bin
     dir
     mingw32-make
     mkdir emtv
@@ -32,6 +32,7 @@ build_script:
     mv emtv-win.7z win-install\packages\com.github.cmosher01.emtv\data\
     cd win-install
     binarycreator.exe --offline-only -c config\config.xml -p packages setup-emtv.exe
+    cd ..
     mv win-install\setup-emtv.exe .\
 artifacts:
   - name: zipfile
