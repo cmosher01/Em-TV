@@ -8,14 +8,20 @@ before_build:
 build_script:
   ps: |
     mingw32-make
-    ren release emtv
+    mkdir emtv
+    cp release\emtv.exe emtv\
     cd emtv
     windeployqt.exe emtv.exe
     cd ..
-    7z a emtv-win.zip emtv\
+    7z a emtv-win.7z emtv\
+    mkdir win-install\packages\com.github.cmosher01.emtv\data
+    mv emtv-win.7z win-install\packages\com.github.cmosher01.emtv\data\
+    cd win-install
+    binarycreator.exe --offline-only -c config\config.xml -p packages setup-emtv.exe
+    mv win-install\setup-emtv.exe .\
 artifacts:
   - name: zipfile
-    path: '*.zip'
+    path: setup-emtv.exe
 deploy:
   description: Latest stable release
   provider: GitHub
