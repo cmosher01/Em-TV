@@ -1,22 +1,25 @@
 ---
 install:
   - set QTDIR=C:\Qt\5.13\mingw73_64
-  - set MINGWDIR=C:\mingw-w64\x86_64-7.2.0-posix-seh-rt_v5-rev1\mingw64
-  - set PATH=%PATH%;%QTDIR%\bin;%MINGWDIR%\bin;C:\Qt\QtIFW-3.1.1\bin
+  - set QTIFWDIR=C:\Qt\Tools\QtInstallerFramework\3.1
+  - set MINGWDIR=C:\mingw-w64\x86_64-7.3.0-posix-seh-rt_v5-rev0\mingw64
+  - set PATH=%PATH%;%QTDIR%\bin;%MINGWDIR%\bin;%QTIFWDIR%\bin
 before_build:
   - qmake emtv.pro
 build_script:
   ps: |
     dir C:\
-    dir C:\MinGW
-    dir C:\mingw-w64
+    dir C:\MinGW\bin
+    dir C:\mingw-w64\x86_64-7.3.0-posix-seh-rt_v5-rev0\mingw64\bin
     dir c:\msys64
-    dir C:\Qt\5.13\mingw73_64
-    dir C:\Qt\Tools\mingw730_64
+    dir C:\Qt\5.13\mingw73_64\bin
+    dir C:\Qt\Tools\mingw730_64\bin
     dir C:\Qt
-    dir C:\Qt\5.13
+    dir C:\Qt\5.13\mingw73_64\bin
     dir C:\Qt\Tools
+    dir C:\Qt\Tools\mingw730_64
     dir C:\Qt\Tools\QtInstallerFramework
+    dir C:\Qt\Tools\QtInstallerFramework\3.1
     dir
     mingw32-make
     mkdir emtv
