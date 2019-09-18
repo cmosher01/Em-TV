@@ -8,9 +8,16 @@ before_build:
 build_script:
   ps: |
     dir C:\
+    dir C:\MinGW
+    dir C:\mingw-w64
+    dir c:\msys64
+    dir C:\Qt\5.13\mingw73_64
+    dir C:\Qt\Tools\mingw730_64
     dir C:\Qt
     dir C:\Qt\5.13
     dir C:\Qt\Tools
+    dir C:\Qt\Tools\QtInstallerFramework
+    dir
     mingw32-make
     mkdir emtv
     cp release\emtv.exe emtv\
