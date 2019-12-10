@@ -18,6 +18,7 @@ matrix:
         - make
         - zip -j ${NAME}-${TRAVIS_OS_NAME} $(basename *.pro .pro)
     - os: osx
+      osx_image: xcode10
       env:
         - PATH=/usr/local/opt/qt/bin:$PATH
       install:
