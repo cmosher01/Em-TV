@@ -23,12 +23,23 @@ jobs:
     steps:
       - uses: "actions/checkout@v3"
 
+      - uses: "msys2/setup-msys2@v2"
+        with:
+          msystem: "mingw64"
+          release: false
+
       - uses: "jurplel/install-qt-action@v3"
 
-      - uses: "egor-tensin/vs-shell@v2"
+      # - uses: "egor-tensin/vs-shell@v2"
 
       - run: "qmake"
+        with:
+          shell: "msys2 {0}"
 
       - run: "make"
+        with:
+          shell: "msys2 {0}"
 
       - run: "ls"
+        with:
+          shell: "msys2 {0}"
