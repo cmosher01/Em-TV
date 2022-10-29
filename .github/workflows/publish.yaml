@@ -37,27 +37,18 @@ jobs:
       - run: "nmake"
         if: "${{ matrix.os == 'windows-latest'}}"
 
-      - run: "ls -l $name"
-        if: "${{ matrix.os == 'ubuntu-latest'}}"
-      - run: "ls -lR $name.app"
-        if: "${{ matrix.os == 'macos-latest'}}"
-      - run: "ls release/$Env:name"
-        if: "${{ matrix.os == 'windows-latest'}}"
-
       - run: "pkgbuild --identifier nu.mine.mosher.$name --root $name.app $name.pkg"
         if: "${{ matrix.os == 'macos-latest'}}"
-      - run: "ls -l"
-        if: "${{ matrix.os == 'macos-latest'}}"
 
       - uses: "softprops/action-gh-release@v1"
         if: "${{ matrix.os == 'ubuntu-latest'}}"
         with:
-          files: "$name"
+          files: "${{ env.name }}"
       - uses: "softprops/action-gh-release@v1"
         if: "${{ matrix.os == 'macos-latest'}}"
         with:
-          files: "$name.pkg"
+          files: "${{ env.name }}.pkg"
       - uses: "softprops/action-gh-release@v1"
         if: "${{ matrix.os == 'windows-latest'}}"
         with:
-          files: "release/$Env:name.exe"
+          files: "release/${{ env.name }}.exe"
