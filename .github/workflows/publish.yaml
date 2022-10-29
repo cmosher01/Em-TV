@@ -47,7 +47,7 @@ jobs:
           nmake
           windeployqt release/${{ env.name }}.exe
           Copy-Item "AppxManifest.xml" -Destination "release"
-          Copy-Item "small.ico" -Destination "release"
+          Copy-Item "small.png" -Destination "release"
           Get-ChildItem -Recurse
           MakeAppx pack /v /h SHA384 /d release /p ${{ env.name }}.msix
           ls
