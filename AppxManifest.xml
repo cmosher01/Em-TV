@@ -18,7 +18,11 @@
     <OSMaxVersionTested>6.3.1</OSMaxVersionTested>
   </Prerequisites>
   <Applications>
-    <Application Id="App">
+    <Application
+      Id="App"
+      Executable="emtv.exe"
+      EntryPoint="main"
+    >
       <VisualElements
         DisplayName="Em-Tv"
         Logo="small.png"
