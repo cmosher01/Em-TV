@@ -43,10 +43,12 @@ jobs:
         if: "${{ matrix.os == 'ubuntu-latest'}}"
       - run: "ls -lR $name.app"
         if: "${{ matrix.os == 'macos-latest'}}"
-      - run: "ls release/%name%.exe"
+      - run: |
+          ls release
+          echo %name%
         if: "${{ matrix.os == 'windows-latest'}}"
 
-      - run: "pkgbuild --root $name.app $name.pkg"
+      - run: "pkgbuild --identifier nu.mine.mosher.$name --root $name.app $name.pkg"
         if: "${{ matrix.os == 'macos-latest'}}"
       - run: "ls -l"
         if: "${{ matrix.os == 'macos-latest'}}"
