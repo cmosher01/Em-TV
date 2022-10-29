@@ -33,13 +33,10 @@ jobs:
       # - uses: "egor-tensin/vs-shell@v2"
 
       - run: "qmake"
-        with:
-          shell: "msys2 {0}"
+        shell: "msys2 {0}"
 
       - run: "make"
-        with:
-          shell: "msys2 {0}"
+        shell: "msys2 {0}"
 
       - run: "ls"
-        with:
-          shell: "msys2 {0}"
+        shell: "msys2 {0}"
