@@ -46,9 +46,7 @@ jobs:
       - run: "ls release/%name%.exe"
         if: "${{ matrix.os == 'windows-latest'}}"
 
-      - uses: "joncrain/munkipkg-action@v1.3"
+      - run: "pkgbuild --root $name.app $name.pkg"
         if: "${{ matrix.os == 'macos-latest'}}"
-        with:
-          pkg_subdir: "$name.app"
       - run: "ls -l"
         if: "${{ matrix.os == 'macos-latest'}}"
