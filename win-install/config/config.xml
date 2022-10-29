@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<Installer>
-    <Name>Em-TV</Name>
-    <Version>1.0.2</Version>
-    <Title>Television Emulator</Title>
-    <Publisher>Christopher A. Mosher</Publisher>
-    <StartMenuDir>Em-TV</StartMenuDir>
-    <TargetDir>@ApplicationsDir@/Em-TV</TargetDir>
-</Installer>
