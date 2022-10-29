@@ -43,7 +43,7 @@ jobs:
         if: "${{ matrix.os == 'ubuntu-latest'}}"
       - run: "ls -lR $name.app"
         if: "${{ matrix.os == 'macos-latest'}}"
-      - run: "ls release/$name.exe"
+      - run: "ls release/%name%.exe"
         if: "${{ matrix.os == 'windows-latest'}}"
 
       - uses: "joncrain/munkipkg-action@v1.3"
