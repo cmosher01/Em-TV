@@ -23,6 +23,8 @@ jobs:
     steps:
       - uses: "actions/checkout@v3"
 
+      - uses: "egor-tensin/vs-shell@v2"
+
       - uses: "jurplel/install-qt-action@v3"
 
       - run: "qmake"
