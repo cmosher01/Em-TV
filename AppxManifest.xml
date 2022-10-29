@@ -12,6 +12,6 @@
   </Properties>
 
   <Applications>
-    <Application Id="Em-Tv"/>
+    <Application Id="App"/>
   </Applications>
 </Package>
