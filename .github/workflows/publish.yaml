@@ -29,11 +29,16 @@ jobs:
 
       - run: "qmake"
 
-      - run: "nmake"
-        if: "${{ matrix.os == 'windows-latest'}}"
-      - run: "make"
-        if: "${{ matrix.os == 'macos-latest'}}"
       - run: "make"
         if: "${{ matrix.os == 'ubuntu-latest'}}"
+      - run: "make"
+        if: "${{ matrix.os == 'macos-latest'}}"
+      - run: "nmake"
+        if: "${{ matrix.os == 'windows-latest'}}"
 
+      - run: "ls"
+        if: "${{ matrix.os == 'ubuntu-latest'}}"
+      - run: "ls"
+        if: "${{ matrix.os == 'macos-latest'}}"
       - run: "ls release"
+        if: "${{ matrix.os == 'windows-latest'}}"
