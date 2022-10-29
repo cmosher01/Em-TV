@@ -45,9 +45,9 @@ jobs:
 
       - run: |
           nmake
-          windeployqt release/$name.exe
+          windeployqt release/${{ env.name }}.exe
           Get-ChildItem -Recurse
-          MakeAppx pack /v /h SHA384 /d release /p $name.msix
+          MakeAppx pack /v /h SHA384 /d release /p ${{ env.name }}.msix
           ls
         if: "${{ matrix.os == 'windows-latest'}}"
 
