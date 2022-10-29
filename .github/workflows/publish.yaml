@@ -43,12 +43,23 @@ jobs:
         if: "${{ matrix.os == 'ubuntu-latest'}}"
       - run: "ls -lR $name.app"
         if: "${{ matrix.os == 'macos-latest'}}"
-      - run: |
-          ls release
-          echo %name%
+      - run: "ls release/$Env:name"
         if: "${{ matrix.os == 'windows-latest'}}"
 
       - run: "pkgbuild --identifier nu.mine.mosher.$name --root $name.app $name.pkg"
         if: "${{ matrix.os == 'macos-latest'}}"
       - run: "ls -l"
         if: "${{ matrix.os == 'macos-latest'}}"
+
+      - uses: "softprops/action-gh-release@v1"
+        if: "${{ matrix.os == 'ubuntu-latest'}}"
+        with:
+          files: "$name"
+      - uses: "softprops/action-gh-release@v1"
+        if: "${{ matrix.os == 'macos-latest'}}"
+        with:
+          files: "$name.pkg"
+      - uses: "softprops/action-gh-release@v1"
+        if: "${{ matrix.os == 'windows-latest'}}"
+        with:
+          files: "release/$Env:name.exe"
