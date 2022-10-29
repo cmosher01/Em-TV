@@ -2,11 +2,12 @@
 <Package xmlns="http://schemas.microsoft.com/appx/2010/manifest">
   <Identity
     Name="5ed71109-0bc9-404a-8bfe-63e18ec2813b"
+    Publisher="Christopher Alan Mosher, Shelton, Connecticut, USA"
     Version="0.0.1.0" />
 
   <Properties>
     <DisplayName>Em-Tv</DisplayName>
-    <PublisherDisplayName>Christopher Alan Mosher</PublisherDisplayName>
+    <PublisherDisplayName>Christopher Alan Mosher, Shelton, Connecticut, USA</PublisherDisplayName>
   </Properties>
 
   <Applications>
