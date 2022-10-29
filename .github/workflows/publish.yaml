@@ -1,10 +1,8 @@
 ---
 on:
   push:
-    # tags:
-    #   - "*"
-    branches:
-      - "master"
+    tags:
+      - "*"
 
 env:
   name: "emtv"
