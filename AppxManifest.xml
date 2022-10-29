@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Package xmlns="http://schemas.microsoft.com/appx/2010/manifest">
+<Package
+  xmlns="http://schemas.microsoft.com/appx/2010/manifest"
+  xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+>
   <Identity
     Name="5ed71109-0bc9-404a-8bfe-63e18ec2813b"
     Publisher="CN=mosher.mine.nu"
@@ -13,11 +16,11 @@
   <Applications>
     <Application Id="App">
       <uap:VisualElements
-        DisplayName = 'Em-Tv'
-        Description = 'TV simulator'
-        BackgroundColor = 'white'
-        Square150x150Logo = 'small.png'
-        Square44x44Logo = 'small.png'
+        DisplayName="Em-Tv"
+        Description="TV simulator"
+        BackgroundColor="white"
+        Square150x150Logo="small.png"
+        Square44x44Logo="small.png"
       />
     </Application>
   </Applications>
