@@ -10,6 +10,13 @@
     <PublisherDisplayName>mosher.mine.nu</PublisherDisplayName>
     <Logo>small.png</Logo>
   </Properties>
+  <Resources>
+    <Resource Language="en-us"/>
+  </Resources>
+  <Prerequisites>
+    <OSMinVersion>6.2</OSMinVersion>
+    <OSMaxVersionTested>6.3.1</OSMaxVersionTested>
+  </Prerequisites>
   <Applications>
     <Application Id="App">
       <VisualElements
