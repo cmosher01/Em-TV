@@ -33,35 +33,34 @@ jobs:
       - run: "make"
         if: "${{ matrix.os == 'ubuntu-latest'}}"
       - run: |
-          set -x
           make
-          macdeployqt $name.app -verbose=3
+          macdeployqt $name.app
         if: "${{ matrix.os == 'macos-latest'}}"
       - run: "nmake"
         if: "${{ matrix.os == 'windows-latest'}}"
 
 
 
-      - run: "ls -l"
-        if: "${{ matrix.os == 'ubuntu-latest'}}"
-      - run: "ls -lR"
-        if: "${{ matrix.os == 'macos-latest'}}"
-      - run: "Get-ChildItem -Recurse"
-        if: "${{ matrix.os == 'windows-latest'}}"
-
-
-
-      # - run: "pkgbuild --install-location /Applications --identifier nu.mine.mosher.$name --component $name.app/ $name.pkg"
+      # - run: "ls -l"
+      #   if: "${{ matrix.os == 'ubuntu-latest'}}"
+      # - run: "ls -lR"
       #   if: "${{ matrix.os == 'macos-latest'}}"
+      # - run: "Get-ChildItem -Recurse"
+      #   if: "${{ matrix.os == 'windows-latest'}}"
+
+
+
+      - run: "pkgbuild --install-location /Applications --identifier nu.mine.mosher.$name --component $name.app/ $name.pkg"
+        if: "${{ matrix.os == 'macos-latest'}}"
 
       # - uses: "softprops/action-gh-release@v1"
       #   if: "${{ matrix.os == 'ubuntu-latest'}}"
       #   with:
       #     files: "${{ env.name }}"
-      # - uses: "softprops/action-gh-release@v1"
-      #   if: "${{ matrix.os == 'macos-latest'}}"
-      #   with:
-      #     files: "${{ env.name }}.pkg"
+      - uses: "softprops/action-gh-release@v1"
+        if: "${{ matrix.os == 'macos-latest'}}"
+        with:
+          files: "${{ env.name }}.pkg"
       # - uses: "softprops/action-gh-release@v1"
       #   if: "${{ matrix.os == 'windows-latest'}}"
       #   with:
