@@ -33,8 +33,9 @@ jobs:
       - run: "make"
         if: "${{ matrix.os == 'ubuntu-latest'}}"
       - run: |
+          set -x
           make
-          macdeployqt -verbose=3 $name.app
+          macdeployqt $name.app -verbose=3
         if: "${{ matrix.os == 'macos-latest'}}"
       - run: "nmake"
         if: "${{ matrix.os == 'windows-latest'}}"
