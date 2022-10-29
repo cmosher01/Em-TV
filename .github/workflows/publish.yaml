@@ -37,7 +37,7 @@ jobs:
       - run: "nmake"
         if: "${{ matrix.os == 'windows-latest'}}"
 
-      - run: "pkgbuild --identifier nu.mine.mosher.$name --root $name.app $name.pkg"
+      - run: "pkgbuild --install-location /Applications --identifier nu.mine.mosher.$name --component $name.app/ $name.pkg"
         if: "${{ matrix.os == 'macos-latest'}}"
 
       - uses: "softprops/action-gh-release@v1"
