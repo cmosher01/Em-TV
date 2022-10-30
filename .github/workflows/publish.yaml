@@ -9,28 +9,18 @@ env:
   desc: "Black and white NTSC TV emulator"
   deb_depends: "libqt5core5a, libqt5gui5, libqt5widgets5"
 
+permissions:
+  contents: "write"
+
+
+
+
+
 jobs:
-  "publish":
-    strategy:
-      matrix:
-        os:
-          - "ubuntu-latest"
-          - "macos-latest"
-          - "windows-latest"
-
-    runs-on: "${{ matrix.os }}"
-
-    permissions:
-      contents: "write"
-
+  "publish-ubuntu":
+    runs-on: "ubuntu-latest"
     steps:
       - uses: "actions/checkout@v3"
-
-
-
-
-
-      # UBUNTU
 
       - run: |
           sudo apt install -y qtbase5-dev qt5-qmake
@@ -38,10 +28,8 @@ jobs:
           make
           mkdir -p ./deb/usr/bin/
           cp ${{ env.name }} ./deb/usr/bin/
-        if: "${{ matrix.os == 'ubuntu-latest'}}"
 
       - uses: "jiro4989/build-deb-action@v2"
-        if: "${{ matrix.os == 'ubuntu-latest'}}"
         with:
           package: "${{ env.name }}"
           desc: "${{ env.desc }}"
@@ -52,18 +40,20 @@ jobs:
           depends: "${{ env.deb_depends }}"
 
       - uses: "softprops/action-gh-release@v1"
-        if: "${{ matrix.os == 'ubuntu-latest'}}"
         with:
-          files: "*.deb"
+          files: |
+            *.deb
 
 
 
 
 
-      # MACOS
+  "publish-macos":
+    runs-on: "macos-latest"
+    steps:
+      - uses: "actions/checkout@v3"
 
       - uses: "jurplel/install-qt-action@v3"
-        if: "${{ matrix.os == 'macos-latest'}}"
         with:
           version: "5.15.2"
 
@@ -72,24 +62,24 @@ jobs:
           make
           macdeployqt $name.app
           pkgbuild --install-location /Applications --identifier nu.mine.mosher.$name --component $name.app/ $name.pkg
-        if: "${{ matrix.os == 'macos-latest'}}"
 
       - uses: "softprops/action-gh-release@v1"
-        if: "${{ matrix.os == 'macos-latest'}}"
         with:
-          files: "${{ env.name }}.pkg"
+          files: |
+            *.pkg
 
 
 
 
 
-      # WINDOWS
+  "publish-windows":
+    runs-on: "windows-latest"
+    steps:
+      - uses: "actions/checkout@v3"
 
       - uses: "egor-tensin/vs-shell@v2"
-        if: "${{ matrix.os == 'windows-latest'}}"
 
       - uses: "jurplel/install-qt-action@v3"
-        if: "${{ matrix.os == 'windows-latest'}}"
         with:
           version: "5.15.2"
 
@@ -101,17 +91,15 @@ jobs:
           Copy-Item "AppxManifest.xml" -Destination "${{ env.name }}"
           Copy-Item "small.png" -Destination "${{ env.name }}"
           Get-ChildItem -Recurse
-          MakeAppx pack /v /h SHA384 /d ${{ env.name }} /p ${{ env.name }}.msix
-        if: "${{ matrix.os == 'windows-latest'}}"
+          MakeAppx pack /v /h SHA384 /d ${{ env.name }} /p ${{ env.name }}-windows.msix
 
       - uses: "thedoctor0/zip-release@main"
-        if: "${{ matrix.os == 'windows-latest'}}"
         with:
           path: "${{ env.name }}"
-          filename: "${{ env.name }}-win.zip"
+          filename: "${{ env.name }}-windows.zip"
 
       - uses: "softprops/action-gh-release@v1"
-        if: "${{ matrix.os == 'windows-latest'}}"
         with:
-          files: "${{ env.name }}-win.zip"
-            # don't release .msix because it's not signed
+          files: |
+            *.zip
+            *.msix
