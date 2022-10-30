@@ -26,24 +26,20 @@ jobs:
     steps:
       - uses: "actions/checkout@v3"
 
-      - uses: "egor-tensin/vs-shell@v2"
-        if: "${{ matrix.os == 'windows-latest'}}"
-
-      - uses: "jurplel/install-qt-action@v3"
-        with:
-          version: "6.4.0"
-
-      - run: "qmake"
 
 
+
+
+      # UBUNTU
 
       - run: |
+          sudo apt install -y qtbase5-dev qt5-qmake
+          qmake
           make
           mkdir -p ./deb/usr/bin/
           cp ${{ env.name }} ./deb/usr/bin/
-          mkdir -p ./rpm/usr/bin/
-          cp ${{ env.name }} ./rpm/usr/bin/
         if: "${{ matrix.os == 'ubuntu-latest'}}"
+
       - uses: "jiro4989/build-deb-action@v2"
         if: "${{ matrix.os == 'ubuntu-latest'}}"
         with:
@@ -54,25 +50,51 @@ jobs:
           arch: "amd64"
           package_root: "./deb/"
           depends: "${{ env.deb_depends }}"
-      # - uses: "jiro4989/build-rpm-action@v2"
-      #   if: "${{ matrix.os == 'ubuntu-latest'}}"
-      #   with:
-      #     package: "${{ env.name }}"
-      #     summary: "${{ env.desc }}"
-      #     maintainer: "${{ github.repository_owner }}"
-      #     version: "${{ github.ref }}"
-      #     arch: "x86_64"
-      #     package_root: "./rpm/"
-      #     requires: "${{ env.rpm_depends }}" # NOT IMPLEMENTED
+
       - uses: "softprops/action-gh-release@v1"
         if: "${{ matrix.os == 'ubuntu-latest'}}"
         with:
-          files: |
-            *.deb
+          files: "*.deb"
 
 
+
+
+
+      # MACOS
+
+      - uses: "jurplel/install-qt-action@v3"
+        if: "${{ matrix.os == 'macos-latest'}}"
+        with:
+          version: "5.15.2"
 
       - run: |
+          qmake
+          make
+          macdeployqt $name.app
+          pkgbuild --install-location /Applications --identifier nu.mine.mosher.$name --component $name.app/ $name.pkg
+        if: "${{ matrix.os == 'macos-latest'}}"
+
+      - uses: "softprops/action-gh-release@v1"
+        if: "${{ matrix.os == 'macos-latest'}}"
+        with:
+          files: "${{ env.name }}.pkg"
+
+
+
+
+
+      # WINDOWS
+
+      - uses: "egor-tensin/vs-shell@v2"
+        if: "${{ matrix.os == 'windows-latest'}}"
+
+      - uses: "jurplel/install-qt-action@v3"
+        if: "${{ matrix.os == 'windows-latest'}}"
+        with:
+          version: "5.15.2"
+
+      - run: |
+          qmake
           nmake
           Rename-Item -Path "release" -NewName "${{ env.name }}"
           windeployqt ${{ env.name }}/${{ env.name }}.exe
@@ -92,17 +114,4 @@ jobs:
         if: "${{ matrix.os == 'windows-latest'}}"
         with:
           files: "${{ env.name }}-win.zip"
-          # don't release .msix because it's not signed
-
-
-
-      - run: |
-          make
-          macdeployqt $name.app
-          pkgbuild --install-location /Applications --identifier nu.mine.mosher.$name --component $name.app/ $name.pkg
-        if: "${{ matrix.os == 'macos-latest'}}"
-
-      - uses: "softprops/action-gh-release@v1"
-        if: "${{ matrix.os == 'macos-latest'}}"
-        with:
-          files: "${{ env.name }}.pkg"
+            # don't release .msix because it's not signed
