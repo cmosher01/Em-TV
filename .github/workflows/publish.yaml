@@ -15,8 +15,8 @@ jobs:
       matrix:
         os:
           - "ubuntu-latest"
-          # - "macos-latest"
-          # - "windows-latest"
+          - "macos-latest"
+          - "windows-latest"
 
     runs-on: "${{ matrix.os }}"
 
@@ -31,8 +31,7 @@ jobs:
 
       - uses: "jurplel/install-qt-action@v3"
         with:
-          version: "5.15.2"
-          archives: "qtbase"
+          version: "6.4.0"
 
       - run: "qmake"
 
