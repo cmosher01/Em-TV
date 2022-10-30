@@ -53,6 +53,10 @@ jobs:
           ls
         if: "${{ matrix.os == 'windows-latest'}}"
 
+      - uses: "edgarrc/action-7z@v1"
+        with:
+          args: "7z a -tzip ${{ env.name }}.zip ./release/"
+
       - uses: "softprops/action-gh-release@v1"
         if: "${{ matrix.os == 'windows-latest'}}"
         with:
