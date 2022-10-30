@@ -1,6 +1,5 @@
 QT += widgets
 TEMPLATE = app
-CONFIG += STATIC
 CONFIG += c++17
 
 TARGET = emtv
