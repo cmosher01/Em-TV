@@ -62,7 +62,9 @@ jobs:
       - uses: "softprops/action-gh-release@v1"
         if: "${{ matrix.os == 'windows-latest'}}"
         with:
-          files: "${{ env.name }}.msix"
+          files: |
+            ${{ env.name }}.msix
+            ${{ env.name }}.zip
 
 
 
