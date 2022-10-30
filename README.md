@@ -19,6 +19,16 @@ Reduced number of lines to show interlacing:
 
 Download the release package for your platform. Then install, for example:
 
+#### Windows
+
+Expand `emtv-windows.zip` into `C:\Program Files` folder. Double-click `emtv` to run.
+
+#### Ubuntu
+
+```shell
+$ sudo apt install ~/Downloads/emtv_0.0.1_amd64.deb
 ```
-sudo apt install ~/Downloads/emtv_0.0.1_amd64.deb
-```
+
+#### MacOS
+
+Double-click `emtv.pkg` and follow the instructions.
