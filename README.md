@@ -15,3 +15,10 @@ Reduced number of lines to show interlacing:
 
 ![TV](screenshot2.gif)
 
+## installation
+
+Download the release package for your platform. Then install, for example:
+
+```
+sudo apt install ~/Downloads/emtv_0.0.1_amd64.deb
+```
