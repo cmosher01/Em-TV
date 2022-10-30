@@ -45,26 +45,25 @@ jobs:
 
       - run: |
           nmake
-          windeployqt release/${{ env.name }}.exe
-          Copy-Item "AppxManifest.xml" -Destination "release"
-          Copy-Item "small.png" -Destination "release"
+          Rename-Item -Path "release" -NewName "${{ env.name }}"
+          windeployqt ${{ env.name }}/${{ env.name }}.exe
+          Copy-Item "AppxManifest.xml" -Destination "${{ env.name }}"
+          Copy-Item "small.png" -Destination "${{ env.name }}"
           Get-ChildItem -Recurse
-          MakeAppx pack /v /h SHA384 /d release /p ${{ env.name }}.msix
-          ls
+          MakeAppx pack /v /h SHA384 /d ${{ env.name }} /p ${{ env.name }}.msix
         if: "${{ matrix.os == 'windows-latest'}}"
 
       - uses: "thedoctor0/zip-release@main"
         if: "${{ matrix.os == 'windows-latest'}}"
         with:
-          path: "release"
-          filename: "${{ env.name }}.zip"
+          path: "${{ env.name }}"
+          filename: "${{ env.name }}-win.zip"
 
       - uses: "softprops/action-gh-release@v1"
         if: "${{ matrix.os == 'windows-latest'}}"
         with:
-          files: |
-            ${{ env.name }}.msix
-            ${{ env.name }}.zip
+          files: "${{ env.name }}-win.zip"
+          # don't release .msix because it's not signed
 
 
 
