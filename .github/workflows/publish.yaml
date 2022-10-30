@@ -7,6 +7,7 @@ on:
 env:
   name: "emtv"
   desc: "Black and white NTSC TV emulator"
+  deb_depends: "libqt5core5a, libqt5gui5, libqt5widgets5"
 
 jobs:
   "publish":
@@ -49,13 +50,14 @@ jobs:
           version: "${{ github.ref }}"
           arch: "amd64"
           package_root: "./deb/"
+          depends: "${{ env.deb_depends }}"
       - run: "ls -l"
         if: "${{ matrix.os == 'ubuntu-latest'}}"
       - uses: "softprops/action-gh-release@v1"
         if: "${{ matrix.os == 'ubuntu-latest'}}"
         with:
           files: |
-            ${{ env.name }}.deb
+            *.deb
 
 
 
